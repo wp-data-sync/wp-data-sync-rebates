@@ -14,7 +14,8 @@
             "includes"
         ],
         "files": [
-            "includes/functions/functions.php"
+            "includes/functions/functions.php",
+            "includes/functions/hooks.php"
         ]
     }
 }

@@ -358,7 +358,7 @@ class Rebate {
         printf( '<th scope="col">%s</th>', esc_html__( 'Brand', 'wpds-rebates' ) );
         printf( '<th scope="col">%s</th>', esc_html__( 'Type', 'wpds-rebates' ) );
         printf( '<th scope="col" colspan="2">%s</th>', esc_html__( 'Product', 'wpds-rebates' ) );
-        printf( '<th scope="col">%s</th>', esc_html__( 'Expiration Date', 'wpds-rebates' ) );
+        printf( '<th scope="col">%s</th>', esc_html__( 'Expires', 'wpds-rebates' ) );
         print( '</tr>' );
         print( '</thead>' );
 

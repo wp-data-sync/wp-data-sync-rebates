@@ -3,7 +3,7 @@
  * Plugin Name:          WP Data Sync - Rebates Integration
  * Plugin URI:           https://wpdatasync.com/products/
  * Description:          Process rebates for WooCommerce products.
- * Version:              1.0.1
+ * Version:              1.0.2
  * Author:               WP Data Sync
  * Author URI:           https://wpdatasync.com
  * Stable tag:           1.0.1
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'WPDSYNC_REBATES_VERSION', '1.0.1' );
+define( 'WPDSYNC_REBATES_VERSION', '1.0.2' );
 define( 'WPDSYNC_REBATES_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WPDSYNC_REBATES_URL', plugin_dir_url( __FILE__ ) );
 
