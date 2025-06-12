@@ -254,12 +254,14 @@ class Rebate {
             return;
         }
 
-        print( '<div class="rebates-list">' );
+        print( '<div class="rebates-table table-responsive">' );
+        print( '<table class="table">' );
 
         foreach ( $rebates as $rebate ) {
             $this->render( $rebate );
         }
 
+        print( '</table>' );
         print( '</div>' );
 
     }
@@ -287,47 +289,48 @@ class Rebate {
         extract( $rebate );
 
         printf(
-            '<div class="rebate rebate-id-%d source-%s">',
+            '<tbody class="rebate rebate-id-%d source-%s">',
             intval( $rebate_id ),
             esc_attr( $source )
         );
 
         printf(
-            '<a href="%s" target="_blank">%s</a>',
+            '<tr><th colspan="2" scope="col"><a href="%s" target="_blank">%s</a></th></tr>',
             esc_url_raw( $url ),
             esc_html( $name )
         );
 
         printf(
-            '<div class="promo-message">%s</div>',
+            '<tr><th class="promo-message" scope="row">%s</th><td>%s</td></tr>',
+            esc_html__( 'Promotion', 'wpds-rebates' ),
             esc_html( $promo_message )
         );
 
         printf(
-            '<div class="rebate-brand"><span class="label">%s:</span> %s</div>',
+            '<tr><th class="rebate-brand" scope="row">%s</th><td>%s</td></tr>',
             esc_html__( 'Brand', 'wpds-rebates' ),
             esc_html( $brand )
         );
 
         printf(
-            '<div class="rebate-type"><span class="label">%s:</span> %s</div>',
+            '<tr><th class="rebate-type" scope="row">%s</th><td>%s</td></tr>',
             esc_html__( 'Type', 'wpds-rebates' ),
             esc_html( $type )
         );
 
         printf(
-            '<div class="rebate-dates"><span class="start label">%s:</span> %s</div>',
+            '<tr><th class="rebate-dates" scope="row">%s</th><td>%s</td></tr>',
             esc_html__( 'Starts', 'wpds-rebates' ),
             esc_html( pretty_date( $start_date ) )
         );
 
         printf(
-            '<div class="rebate-dates"><span class="end label">%s:</span> %s</div>',
+            '<tr><th class="rebate-dates" scope="row">%s</th><td>%s</td></tr>',
             esc_html__( 'Endss', 'wpds-rebates' ),
             esc_html( pretty_date( $end_date ) )
         );
 
-        print( '</div>' );
+        print( '</tbody>' );
 
     }
 
@@ -347,14 +350,15 @@ class Rebate {
 
         ob_start();
 
-        print( '<table class="form-table all-rebates-table">' );
+        print( '<div class="container rebates-table table-responsive">' );
+        print( '<table class="table">' );
         print( '<thead>' );
         print( '<tr>' );
-        printf( '<th>%s</th>', esc_html__( 'Rebate Name', 'wpds-rebates' ) );
-        printf( '<th>%s</th>', esc_html__( 'Brand', 'wpds-rebates' ) );
-        printf( '<th>%s</th>', esc_html__( 'Type', 'wpds-rebates' ) );
-        printf( '<th>%s</th>', esc_html__( 'Product', 'wpds-rebates' ) );
-        printf( '<th>%s</th>', esc_html__( 'Expiration Date', 'wpds-rebates' ) );
+        printf( '<th scope="col" colspan="3">%s</th>', esc_html__( 'Rebate Name', 'wpds-rebates' ) );
+        printf( '<th scope="col">%s</th>', esc_html__( 'Brand', 'wpds-rebates' ) );
+        printf( '<th scope="col">%s</th>', esc_html__( 'Type', 'wpds-rebates' ) );
+        printf( '<th scope="col" colspan="2">%s</th>', esc_html__( 'Product', 'wpds-rebates' ) );
+        printf( '<th scope="col">%s</th>', esc_html__( 'Expiration Date', 'wpds-rebates' ) );
         print( '</tr>' );
         print( '</thead>' );
 
@@ -367,15 +371,17 @@ class Rebate {
             if ( $product = wc_get_product( $product_id ) ) {
 
                 print( '<tr>' );
-                printf( '<td><a href="%s" target="_blank">%s</a></td>', esc_url_raw( $url ), esc_html( $name ) );
-                printf( '<td>%s</td>', esc_html( $brand ) );
-                printf( '<td>%s</td>', esc_html( $type ) );
+                print( '<th scope="row" colspan="3">' );
+                printf( '<a href="%s" target="_blank">%s</a>', esc_url_raw( $url ), esc_html( $name ) );
+                print( '</th>' );
+                printf( '<td class="brand">%s</td>', esc_html( $brand ) );
+                printf( '<td class="type">%s</td>', esc_html( $type ) );
                 printf(
-                    '<td><a href="%s">%s</a></td>',
+                    '<td class="product" colspan="2"><a href="%s">%s</a></td>',
                     esc_url_raw( $product->get_permalink() ),
                     esc_html( $product->get_name() )
                 );
-                printf( '<td>%s</td>', esc_html( pretty_date( $end_date ) ) );
+                printf( '<td class="date">%s</td>', esc_html( pretty_date( $end_date ) ) );
                 print( '</tr>' );
 
             }
@@ -383,6 +389,7 @@ class Rebate {
 
         print( '</tbody>' );
         print( '</table>' );
+        print( '</div>' );
 
         return ob_get_clean();
     }
@@ -420,16 +427,29 @@ class Rebate {
             return;
         }
 
-        print( '<div class="offcanvas offcanvas-end rebates-slideout" tabindex="-1" id="rebates-slideout" aria-labelledby="offcanvasLabel">' );
+        print( '<div class="offcanvas offcanvas-end rebates-slideout container" tabindex="-1" id="rebates-slideout" aria-labelledby="offcanvasLabel">' );
+
+        /**
+         * Button
+         */
         print( '<div class="offcanvas-header">' );
         printf( '<h5 class="offcanvas-title" id="offcanvasLabel">%s</h5>', esc_html__( 'Rebates', 'wpds-rebates' ) );
         print( '<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>' );
         print( '</div>' );
-        print( '<div class="offcanvas-body">' );
+
+        /**
+         * Slideout
+         */
+        print( '<div class="rebates-table table-responsive">' );
+        print( '<table class="table">' );
+
         foreach ( $rebates as $rebate ) {
             $this->render( $rebate );
         }
+
+        print( '</table>' );
         print( '</div>' );
+
         print( '</div>' );
 
     }

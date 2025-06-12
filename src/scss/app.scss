@@ -3,3 +3,13 @@
 .rebates-slideout {
     z-index: 99999;
 }
+
+.rebates-table {
+    td {
+        &.brand,
+        &.type,
+        &.date {
+            white-space: nowrap;
+        }
+    }
+}
