@@ -137,8 +137,9 @@ trait Data_Store {
             "
             SELECT *
             FROM $this->table
-            WHERE end_date > NOW()
-            ORDER BY start_date
+            WHERE start_date < now() 
+              AND end_date > NOW()
+            ORDER BY end_date
             "
         , ARRAY_A );
 
