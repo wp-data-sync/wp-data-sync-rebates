@@ -11,6 +11,8 @@
 
 namespace WP_DataSync\Integration;
 
+use function GuzzleHttp\Psr7\str;
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -377,11 +379,17 @@ class Rebate {
                 printf( '<td class="brand">%s</td>', esc_html( $brand ) );
                 printf( '<td class="type">%s</td>', esc_html( $type ) );
                 printf(
-                    '<td class="product" colspan="2"><a href="%s">%s</a></td>',
+                    '<td class="product" colspan="2" data-category_ids="[%s]"><a href="%s">%s</a></td>',
+                    esc_attr( join( ',', $product->get_category_ids() ) ),
                     esc_url_raw( $product->get_permalink() ),
                     esc_html( $product->get_name() )
                 );
-                printf( '<td class="date">%s</td>', esc_html( pretty_date( $end_date ) ) );
+                printf(
+                    '<td class="date" data-start="%d" data-ends="%d">%s</td>',
+                    strtotime( $start_date ),
+                    strtotime( $end_date ),
+                    esc_html( pretty_date( $end_date ) )
+                );
                 print( '</tr>' );
 
             }
