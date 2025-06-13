@@ -11,8 +11,6 @@
 
 namespace WP_DataSync\Integration;
 
-use function GuzzleHttp\Psr7\str;
-
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
