@@ -104,7 +104,7 @@ class Rebate {
                 'type'          => $type,
                 'url'           => $url,
                 'start_date'    => date_i18n( 'Y-m-d 00:00:00', strtotime( $start_date ) ),
-                'end_date'      => date_i18n( 'Y-m-d 00:00:00', strtotime( $end_date ) )
+                'end_date'      => date_i18n( 'Y-m-d 23:59:59', strtotime( $end_date ) )
             ];
 
             $this->sync( $args );
