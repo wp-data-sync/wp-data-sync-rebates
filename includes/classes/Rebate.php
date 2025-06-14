@@ -356,9 +356,9 @@ class Rebate {
         print( '<div class="container rebates-table list table-responsive">' );
 
         print( '<div class="row">' );
-        $this->sort_dropdown();
-        $this->filter_dropdown();
         $this->search_input();
+        $this->filter_dropdown();
+        $this->sort_dropdown();
         print( '</div>' );
 
         /**
