@@ -50,7 +50,7 @@ class Rebate {
 
     public function init(): void {
         add_action( "wp_data_sync_integration_$this->id", [ $this, 'import' ], 10, 2 );
-        add_action( 'wp_enqueue_scripts', [ $this, 'load_scripts' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'load_scripts' ], 999 );
 
         add_filter( 'wp_data_sync_settings', [ $this, 'settings' ] );
         add_filter( 'woocommerce_product_tabs', [ $this, 'maybe_show_product_tab' ] );
@@ -66,6 +66,9 @@ class Rebate {
      */
 
     public function load_scripts(): void {
+        wp_enqueue_style( 'select2' );
+        wp_enqueue_script( 'selectWoo' );
+
         wp_enqueue_style( 'rebates_css', WPDSYNC_REBATES_URL . 'assets/css/app.min.css', [], WPDSYNC_REBATES_VERSION );
         wp_enqueue_script( 'rebates_js', WPDSYNC_REBATES_URL . 'assets/js/app.min.js', ['jquery'], WPDSYNC_REBATES_VERSION );
     }
@@ -350,7 +353,17 @@ class Rebate {
 
         ob_start();
 
-        print( '<div class="container rebates-table table-responsive">' );
+        print( '<div class="container rebates-table list table-responsive">' );
+
+        print( '<div class="row">' );
+        $this->sort_dropdown();
+        $this->filter_dropdown();
+        $this->search_input();
+        print( '</div>' );
+
+        /**
+         * Table
+         */
         print( '<table class="table">' );
         print( '<thead>' );
         print( '<tr>' );
@@ -370,24 +383,28 @@ class Rebate {
 
             if ( $product = wc_get_product( $product_id ) ) {
 
-                print( '<tr>' );
-                print( '<th scope="row" colspan="3">' );
+                printf(
+                    '<tr data-name="%s" data-start="%d" data-expires="%d" data-brand="%s" data-cat_ids="[%s]" data-search="%s %s %s">',
+                    esc_attr( sanitize_title( $name ) ),
+                    strtotime( $start_date ),
+                    strtotime( $end_date ),
+                    esc_attr( sanitize_title( $brand ) ),
+                    esc_attr( join( ',', $product->get_category_ids() ) ),
+                    esc_attr( strtolower( $product->get_name() ) ),
+                    esc_attr( strtolower( $brand ) ),
+                    esc_attr( strtolower( $type ) )
+                );
+                print( '<th scope="row" colspan="3" class="name">' );
                 printf( '<a href="%s" target="_blank">%s</a>', esc_url_raw( $url ), esc_html( $name ) );
                 print( '</th>' );
                 printf( '<td class="brand">%s</td>', esc_html( $brand ) );
                 printf( '<td class="type">%s</td>', esc_html( $type ) );
                 printf(
-                    '<td class="product" colspan="2" data-category_ids="[%s]"><a href="%s">%s</a></td>',
-                    esc_attr( join( ',', $product->get_category_ids() ) ),
+                    '<td class="product" colspan="2"><a href="%s">%s</a></td>',
                     esc_url_raw( $product->get_permalink() ),
                     esc_html( $product->get_name() )
                 );
-                printf(
-                    '<td class="date" data-start="%d" data-ends="%d">%s</td>',
-                    strtotime( $start_date ),
-                    strtotime( $end_date ),
-                    esc_html( pretty_date( $end_date ) )
-                );
+                printf( '<td class="date">%s</td>', esc_html( pretty_date( $end_date ) ) );
                 print( '</tr>' );
 
             }
@@ -459,5 +476,73 @@ class Rebate {
         print( '</div>' );
 
     }
+
+    /**
+     * Sort Dropdown
+     *
+     * @return void
+     */
+
+    public function sort_dropdown(): void {
+
+        print( '<div class="rebate-filter-wrap col-md">');
+        printf( '<select class="rebate-sort" aria-label="%s">', esc_html__( 'Sort', 'wpds-rebates' ) );
+        printf( '<option value="name||0">%s</option>', esc_html__( 'Sort Order', 'wpds-rebates' ) );
+        printf( '<option value="name||asc">%s</option>', esc_html__( 'Name - Assending', 'wpds-rebates' ) );
+        printf( '<option value="name||desc">%s</option>', esc_html__( 'Name - Desending', 'wpds-rebates' ) );
+        printf( '<option value="expires||asc">%s</option>', esc_html__( 'Expires - Assending', 'wpds-rebates' ) );
+        printf( '<option value="expires||desc">%s</option>', esc_html__( 'Expires- Desending', 'wpds-rebates' ) );
+        print( '</select>');
+        print( '</div>');
+
+    }
+
+    /**
+     * Filter Dropdown
+     *
+     * @return void
+     */
+
+    public function filter_dropdown(): void {
+
+        print( '<div class="rebate-filter-wrap col-md">');
+        printf( '<select class="rebate-filter" aria-label="%s">', esc_html__( 'Filter Rebates', 'wpds-rebates' ) );
+        printf( '<option value="brand||0">%s</option>', esc_html__( 'Filter Rebates', 'wpds-rebates' ) );
+
+        printf( '<optgroup label="%s">', esc_attr__( 'Brands', 'wpds-rebates' ) );
+        foreach ( $this->get_brands() as $brand ) {
+            printf( '<option value="brand||%s">%s</option>', esc_attr( sanitize_title( $brand ) ), esc_html( $brand ) );
+        }
+        print( '</optgroup>' );
+
+        printf( '<optgroup label="%s">', esc_attr__( 'Product Categories', 'wpds-rebates' ) );
+        foreach ( $this->get_categories() as $cat ) {
+            printf( '<option value="cat_ids||%d">%s</option>', esc_attr( $cat['id'] ), esc_html( $cat['name'] ) );
+        }
+        print( '</optgroup>' );
+
+        print( '</select>');
+        print( '</div>');
+
+    }
+
+    /**
+     * Search Input
+     *
+     * @return void
+     */
+
+    public function search_input() {
+
+        print( '<div class="rebate-filter-wrap search-wrap col-md">');
+        printf(
+            '<input type="search" class="rebate-search" aria-label="%s" placeholder="%s">',
+            esc_html__( 'Search', 'wpds-rebates' ),
+            esc_attr__( 'Search Rebates', 'wpds-rebates' )
+        );
+        print( '</div>');
+
+    }
+
 
 }

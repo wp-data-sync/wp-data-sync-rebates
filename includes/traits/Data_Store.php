@@ -140,8 +140,74 @@ trait Data_Store {
             WHERE start_date < now() 
               AND end_date > NOW()
             ORDER BY end_date
+            ",
+            ARRAY_A
+        );
+
+        if ( empty( $results ) || is_wp_error( $results ) ) {
+            return [];
+        }
+
+        return $results;
+
+    }
+
+    /**
+     * Get Brands
+     *
+     * @return array
+     */
+
+    public function get_brands(): array {
+
+        global $wpdb;
+
+        $results = $wpdb->get_col(
             "
-        , ARRAY_A );
+            SELECT DISTINCT brand
+            FROM $this->table
+            WHERE start_date < now() 
+              AND end_date > NOW()
+            ORDER BY brand
+            "
+        );
+
+        if ( empty( $results ) || is_wp_error( $results ) ) {
+            return [];
+        }
+
+        return $results;
+
+    }
+
+    /**
+     * Get Categories
+     *
+     * @return array
+     */
+
+    public function get_categories(): array {
+
+        global $wpdb;
+
+        $results = $wpdb->get_results(
+            "
+            SELECT DISTINCT t.term_id AS id, t.name AS name
+            FROM $wpdb->term_relationships tr
+            INNER JOIN $wpdb->term_taxonomy tt
+                ON tt.term_taxonomy_id = tr.term_taxonomy_id
+            INNER JOIN $wpdb->terms t
+                ON t.term_id = tt.term_id
+            WHERE tr.object_id IN (
+                SELECT DISTINCT product_id
+                FROM $this->table
+                WHERE start_date < now() AND end_date > NOW()
+            )
+            AND taxonomy = 'product_cat'
+            ORDER BY t.name
+            ",
+            ARRAY_A
+        );
 
         if ( empty( $results ) || is_wp_error( $results ) ) {
             return [];
