@@ -35,16 +35,19 @@ jQuery(document).ready(function ($) {
                     $this.show();
                 } else if ('cat_ids' === key) {
 
-                    if ($.inArray(parseInt(val), $thisVal)) {
-                        $this.show();
-                    } else {
-                        $this.hide();
-                    }
+                    $.each($thisVal, function(i, v) {
 
+                        if ( v === parseInt(val) ) {
+                            $this.show();
+                            return;
+                        }
+
+                        $this.hide();
+                    });
 
                 } else {
 
-                    if (typeof $this.data(key) === 'string' && val === $thisVal) {
+                    if (val === $thisVal) {
                         $this.show();
                     } else {
                         $this.hide();
@@ -87,21 +90,30 @@ jQuery(document).ready(function ($) {
         sortElement.on('change', function () {
             let val = $(this).val().split('||');
 
-            sort(val[0], val[1]);
+            list.height(list.height()).fadeOut().promise().done(function() {
+                sort(val[0], val[1]);
+                list.css('height', 'auto').fadeIn();
+            });
         });
 
         filterElement.on('change', function () {
-            searchElement.val('');
             let val = $(this).val().split('||');
 
-            filter(val[0], val[1]);
+            list.height(list.height()).fadeOut().promise().done(function() {
+                searchElement.val('');
+                filter(val[0], val[1]);
+                list.css('height', 'auto').fadeIn();
+            });
         });
 
         searchElement.on('input', function () {
-            filterElement.val('brand||0').trigger('change.select2');
             let val = $(this).val();
 
-            search(val.toLowerCase());
+            list.height(list.height()).fadeOut().promise().done(function() {
+                filterElement.val('brand||0').trigger('change.select2');
+                search(val.toLowerCase());
+                list.css('height', 'auto').fadeIn();
+            });
         });
 
     }

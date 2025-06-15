@@ -367,11 +367,9 @@ class Rebate {
         print( '<table class="table">' );
         print( '<thead>' );
         print( '<tr>' );
-        printf( '<th scope="col" colspan="3">%s</th>', esc_html__( 'Rebate Name', 'wpds-rebates' ) );
-        printf( '<th scope="col">%s</th>', esc_html__( 'Brand', 'wpds-rebates' ) );
-        printf( '<th scope="col">%s</th>', esc_html__( 'Type', 'wpds-rebates' ) );
-        printf( '<th scope="col" colspan="2">%s</th>', esc_html__( 'Product', 'wpds-rebates' ) );
-        printf( '<th scope="col">%s</th>', esc_html__( 'Expires', 'wpds-rebates' ) );
+        printf( '<th scope="col" colspan="6">%s</th>', esc_html__( 'Rebate Name', 'wpds-rebates' ) );
+        printf( '<th scope="col" class="hide-800">%s</th>', esc_html__( 'Brand', 'wpds-rebates' ) );
+        printf( '<th scope="col" class="hide-800">%s</th>', esc_html__( 'Expires', 'wpds-rebates' ) );
         print( '</tr>' );
         print( '</thead>' );
 
@@ -394,17 +392,28 @@ class Rebate {
                     esc_attr( strtolower( $brand ) ),
                     esc_attr( strtolower( $type ) )
                 );
-                print( '<th scope="row" colspan="3" class="name">' );
+                print( '<td class="name" colspan="6">' );
                 printf( '<a href="%s" target="_blank">%s</a>', esc_url_raw( $url ), esc_html( $name ) );
-                print( '</th>' );
-                printf( '<td class="brand">%s</td>', esc_html( $brand ) );
-                printf( '<td class="type">%s</td>', esc_html( $type ) );
+
+                print('<ul class="rebate-details">');
+                printf( '<li class="show-800"><b>%s:</b> %s</li>', esc_html__( 'Brand', 'wpds-rebates' ), esc_html( $brand ) );
+                printf( '<li><b>%s:</b> %s</li>', esc_html__( 'Type', 'wpds-rebates' ), esc_html( $type ) );
                 printf(
-                    '<td class="product" colspan="2"><a href="%s">%s</a></td>',
+                    '<li class="show-800"><b>%s:</b> %s</li>',
+                    esc_html__( 'Expires', 'wpds-rebates' ),
+                    esc_html( pretty_date( $end_date ) )
+                );
+                printf(
+                    '<li><b>%s:</b> <a href="%s">%s</a></li>',
+                    esc_html__( 'Product', 'wpds-rebates' ),
                     esc_url_raw( $product->get_permalink() ),
                     esc_html( $product->get_name() )
                 );
-                printf( '<td class="date">%s</td>', esc_html( pretty_date( $end_date ) ) );
+                print('</ul>');
+
+                print( '</td>' );
+                printf( '<td class="date hide-800">%s</td>', esc_html( $brand ) );
+                printf( '<td class="date hide-800">%s</td>', esc_html( pretty_date( $end_date ) ) );
                 print( '</tr>' );
 
             }
